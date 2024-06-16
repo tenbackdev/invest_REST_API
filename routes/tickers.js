@@ -38,6 +38,15 @@ router.post('/', (req, res) => {
     res.send(`${ticker.ticker} has been added to the database.`);
 })
 
+router.patch('/:tickerId', (req, res) => {
+    const {tickerId} = req.params;
+    const {ticker, ticker_name} = req.body;
+    const tickerTest = tickers.find((ticker) => ticker.ticker === tickerId);
+
+    if(ticker_name) tickerTest.ticker_name = ticker_name;
+    res.send(`${tickerId} has been updated.`);
+})
+
 router.delete('/:tickerId', (req, res) => {
     const {tickerId} = req.params;
     tickers = tickers.filter((ticker) => ticker.ticker !== tickerId)
