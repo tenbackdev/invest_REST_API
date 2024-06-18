@@ -22,8 +22,23 @@ let tickers = [
 ]
 
 
-router.get('/', (req, res) => {
-    res.send(tickers);
+router.get('/', async (req, res) => {
+    try {
+        const rqst = new sql.Request();
+        const rslt = await rqst.query('select * from invest.lkup.tickers');
+
+        const tickers = rslt.recordset.map(row => ({
+            ticker: tickers.ticker,
+            ticker_name: tickers.ticker_name
+        }));
+
+        res.json(tickers);
+    } catch (err) {
+        console.error('Error querying the database:', err);
+        res.status(500).send('Internal Server Error');
+    }
+    //old defintion
+    //res.send(tickers);
 })
 
 router.get('/:tickerId', (req, res) => {

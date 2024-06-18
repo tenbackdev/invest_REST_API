@@ -1,9 +1,21 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import tickerRoutes from './routes/tickers.js'
+import sql from './node_modules/mssql/index.js'
+import fs from 'fs';
+
+//const fs = require('fs');
+const dbConfig = JSON.parse(fs.readFileSync('dbConfig.json', 'utf-8'));
 
 const app = express();
 const PORT = 5000
+const db = sql.connect(dbConfig, err => {
+    if (err) {
+        console.error('Database connection failed:', err);
+        return;
+    }
+    console.log('Connected to the database.')
+});
 
 app.use(bodyParser.json());
 
@@ -12,7 +24,7 @@ app.use('/tickers', tickerRoutes);
 app.get('/', (req, res) =>{
     console.log('My First Get Route');
     res.send('Hello World!');   
-})
+});
 
 //Endpoints to be added
     //GET /tickers - finds all ticker symbols

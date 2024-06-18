@@ -1,0 +1,10 @@
+{
+    "server": "myServerName",
+    "database": "myDbName",
+    "user": "myUserName",
+    "password": "myPassword",
+    "options": {
+        "encrypt": true,
+        "trustServerCertificate": true
+    }
+}
