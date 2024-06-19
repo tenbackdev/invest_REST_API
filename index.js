@@ -5,7 +5,6 @@ import dbOperations from './dbOperations.js'
 import sql from './node_modules/mssql/index.js'
 import fs from 'fs';
 
-//test
 //const fs = require('fs');
 const dbConfig = JSON.parse(fs.readFileSync('dbConfig.json', 'utf-8'));
 
