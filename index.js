@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import tickerRoutes from './routes/tickers.js'
-import dbOperations from './dbOperations.js'
+import tickerRoutes from './tickers.js'
+//import dbOperations from './dbOperations.js'
 import sql from './node_modules/mssql/index.js'
 import fs from 'fs';
 
@@ -18,9 +18,11 @@ const db = sql.connect(dbConfig, err => {
     console.log('Connected to the database.')
 });
 
-dbOps.getTickers().then(result => {
+/*
+dbOperations.getTickers().then(result => {
     console.log(result);
 })
+*/
 
 app.use(bodyParser.json());
 
