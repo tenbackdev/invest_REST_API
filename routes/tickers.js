@@ -1,5 +1,10 @@
 import express from 'express';
+//import sql from './node_modules/mssql/index.js'
+//import fs from 'fs';
+
 const router = express.Router();
+//const dbConfig = JSON.parse(fs.readFileSync('dbConfig.json', 'utf-8'));
+
 
 // Mock DB to be later be connected to a true DB
 let tickers = [
@@ -24,6 +29,14 @@ let tickers = [
 
 router.get('/', async (req, res) => {
     try {
+        const db = sql.connect(dbConfig, err => {
+            if (err) {
+                console.error('Database connection failed:', err);
+                return;
+            }
+            console.log('Connected to the database.')
+        });
+
         const rqst = new sql.Request();
         const rslt = await rqst.query('select * from invest.lkup.tickers');
 
@@ -31,6 +44,7 @@ router.get('/', async (req, res) => {
             ticker: tickers.ticker,
             ticker_name: tickers.ticker_name
         }));
+        console.log(tickers);
 
         res.json(tickers);
     } catch (err) {

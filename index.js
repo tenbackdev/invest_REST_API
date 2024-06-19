@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import tickerRoutes from './routes/tickers.js'
+import dbOperations from './dbOperations.js'
 import sql from './node_modules/mssql/index.js'
 import fs from 'fs';
 
@@ -17,13 +18,31 @@ const db = sql.connect(dbConfig, err => {
     console.log('Connected to the database.')
 });
 
+dbOps.getTickers().then(result => {
+    console.log(result);
+})
+
 app.use(bodyParser.json());
 
 app.use('/tickers', tickerRoutes);
 
-app.get('/', (req, res) =>{
+//temporary place for this while testing the db connection
+//will relocate to the 'tickers' route once the db connection
+//detail is figured out.
+app.get('/', async (req, res) =>{
     console.log('My First Get Route');
-    res.send('Hello World!');   
+    //res.send('Hello World!');   
+
+    const rqst = new sql.Request();
+    const rslt = await rqst.query('select * from invest.lkup.ticker');
+
+    const tickers = rslt.recordset.map(row => ({
+        ticker: row.ticker,
+        ticker_name: row.ticker_nm
+    }));
+    console.log(tickers);
+
+    res.json(tickers);
 });
 
 //Endpoints to be added
