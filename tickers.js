@@ -1,10 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import * as dbOperations from './dbOperations.js';
+import {getTickers, getTicker, addTicker, updateTicker, deleteTicker} from './dbOperations.js';
 
 router.get('/', async (req, res) => {
     try {
-        const result = await dbOperations.getTickers();
+        const result = await getTickers();
 
         if (result && result[0]) {
             const tickerRes = result[0].map(row => ({
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 router.get('/:tickerId', async (req, res) => {
     try {
         const {tickerId} = req.params;
-        const result = await dbOperations.getTicker(tickerId);
+        const result = await getTicker(tickerId);
 
         if (result && result[0]) {
             const tickerRes = result[0].map(row => ({
@@ -44,11 +44,11 @@ router.get('/:tickerId', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const {ticker, ticker_name} = req.body;
-        const getResult = await dbOperations.getTicker(ticker);
+        const getResult = await getTicker(ticker);
         if (getResult[0].length > 0) {
             res.status(500).send(`Ticker ${ticker} already exists.`);
         } else {
-            const result = await dbOperations.addTicker(ticker, ticker_name);
+            const result = await addTicker(ticker, ticker_name);
             res.status(201).json(result);
         }
     } catch (err) {
@@ -61,13 +61,13 @@ router.patch('/:tickerId', async (req, res) => {
     try {
         const tickerId = req.params.tickerId;
         const {ticker, ticker_name} = req.body;
-        const getResult = await dbOperations.getTicker(ticker);
+        const getResult = await getTicker(ticker);
         if (getResult[0].length === 0) {
             res.status(500).send(`Ticker ${ticker} does not exist.`);
         } else if (tickerId !== ticker) {
             res.status(500).send(`Ticker ${ticker} and ${tickerId} do not match.`);
         } else {
-            const result = await dbOperations.updateTicker(ticker, ticker_name);
+            const result = await updateTicker(ticker, ticker_name);
             res.status(201).json(result);
         }
     } catch (err) {
@@ -75,5 +75,17 @@ router.patch('/:tickerId', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 })
+
+router.delete('/:tickerId', async (req, res) => {
+    try {
+        const tickerId = req.params.tickerId;
+        const result = await deleteTicker(tickerId);
+        res.status(201).json(result);
+    } catch (err) {
+        console.error('Error querying the database:', err);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
 
 export default router

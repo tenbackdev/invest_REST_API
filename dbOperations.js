@@ -56,3 +56,18 @@ export const updateTicker = async (tickerId, tickerName) => {
         console.log(err);
     }
 };
+
+export const deleteTicker = async (tickerId) => {
+    try {
+        let pool = await sql.connect(dbConfig);
+        await pool.request()
+            .input('tickerId', sql.VarChar, tickerId)
+            .query(`delete t
+                    from invest.lkup.ticker as t
+                    where 1=1
+                    and t.ticker = @tickerId`);
+        return {message: `${tickerId} removed successfully.`};
+    } catch (err) {
+        console.log(err);
+    }
+};
