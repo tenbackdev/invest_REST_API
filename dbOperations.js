@@ -1,19 +1,7 @@
-//import express from 'express';
 import sql from 'mssql'
 import fs from 'fs';
-//const router = express.Router();
-//export default dbOperations
 
 const dbConfig = JSON.parse(fs.readFileSync('dbConfig.json', 'utf-8'));
-/*
-const db = sql.connect(dbConfig, err => {
-    if (err) {
-        console.error('Database connection failed:', err);
-        return;
-    }
-    console.log('Connected to the database.')
-});
-*/
 
 export const getTickers = async () => {
     try {
@@ -25,22 +13,46 @@ export const getTickers = async () => {
     }
 };
 
-/*
-async function getTickers() {
+export const getTicker = async (tickerId) => {
     try {
         let pool = await sql.connect(dbConfig);
-        let prods = pool.request.query('select * from invest.lkup.ticker');
+        let prods = await pool.request()
+            .input('tickerId', sql.VarChar, tickerId)
+            .query('select * from invest.lkup.ticker where ticker = @tickerId');
+        
         return prods.recordsets;
     } catch (err) {
         console.log(err);
     }
-}
-*/
+};
 
-/*
-module.exports = {
-    getTickers : getTickers
-}
-*/
+export const addTicker = async (tickerId, tickerName) => {
+    try {
+        let pool = await sql.connect(dbConfig);
+        await pool.request()
+            .input('tickerId', sql.VarChar, tickerId)
+            .input('tickerName', sql.VarChar, tickerName)
+            .query('insert into invest.lkup.ticker (ticker, ticker_nm) values (@tickerId, @tickerName)');
+        return {message: `${tickerId} added successfully.`};
+    } catch (err) {
+        console.log(err);
+    }
+};
 
-//export default dbOperations
+export const updateTicker = async (tickerId, tickerName) => {
+    try {
+        let pool = await sql.connect(dbConfig);
+        await pool.request()
+            .input('tickerId', sql.VarChar, tickerId)
+            .input('tickerName', sql.VarChar, tickerName)
+            .query(`update t
+                    set t.ticker_nm = @tickerName
+                    , t.last_upd_ts = getdate()
+                    from invest.lkup.ticker as t
+                    where 1=1
+                    and t.ticker = @tickerId`);
+        return {message: `${tickerId} updated successfully.`};
+    } catch (err) {
+        console.log(err);
+    }
+};
