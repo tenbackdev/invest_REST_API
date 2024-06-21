@@ -1,13 +1,17 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import tickerRoutes from './tickers.js'
+import tickerRoute from './tickers.js'
+import accountRoute from './account.js'
+import balanceRoute from './balance.js'
 
 const app = express();
 const PORT = 5000
 
 app.use(bodyParser.json());
 
-app.use('/tickers', tickerRoutes);
+app.use('/ticker', tickerRoute);
+app.use('/account', accountRoute);
+app.use('/balance', balanceRoute);
 
 app.get('/', async (req, res) =>{
     console.log('My First Get Route');
