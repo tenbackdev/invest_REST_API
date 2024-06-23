@@ -153,3 +153,17 @@ export const deleteTicker = async (tickerId) => {
 };
 
 /* ============================= Tickers - End ============================= */
+
+/* ========================== Transaction - Start ========================== */
+
+export const getTransactionType = async () => {
+    try {
+        let pool = await getConnection();
+        let prods = await pool.request().query('select * from invest.rpt.v_trans_type');
+        return prods.recordsets;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+/* =========================== Transaction - End =========================== */

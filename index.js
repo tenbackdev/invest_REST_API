@@ -4,6 +4,7 @@ import tickerRoute from './tickers.js'
 import accountRoute from './account.js'
 import balanceRoute from './balance.js'
 import incomeRoute from './income.js'
+import transactionRoute from './transaction.js'
 
 const app = express();
 const PORT = 5000
@@ -14,6 +15,7 @@ app.use('/ticker', tickerRoute);
 app.use('/account', accountRoute);
 app.use('/balance', balanceRoute);
 app.use('/income', incomeRoute);
+app.use('/transaction', transactionRoute);
 
 app.get('/', async (req, res) =>{
     console.log('My First Get Route');
