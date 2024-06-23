@@ -61,6 +61,26 @@ export const getHistoricalBalances = async (histDays) => {
 
 /* ============================= Balances - End ============================= */
 
+/* ============================= Income - Start ============================= */
+
+export const getHistoricalIncome = async (histDays) => {
+    try {
+        let pool = await getConnection();
+        let prods = await pool.request()
+                            .input('hist_days', sql.Int, histDays)                    
+                            .query(`declare @bgn_dt date = cast(getdate() - @hist_days as date)
+                                    select * 
+                                    from invest.rpt.v_acct_inc_hist as s
+                                    where 1=1
+                                    and s.trans_dt >= @bgn_dt`);
+        return prods.recordsets;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+/* ============================== Income - End ============================== */
+
 /* ============================ Tickers - Start ============================ */
 
 export const getTickers = async () => {

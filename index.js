@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import tickerRoute from './tickers.js'
 import accountRoute from './account.js'
 import balanceRoute from './balance.js'
+import incomeRoute from './income.js'
 
 const app = express();
 const PORT = 5000
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use('/ticker', tickerRoute);
 app.use('/account', accountRoute);
 app.use('/balance', balanceRoute);
+app.use('/income', incomeRoute);
 
 app.get('/', async (req, res) =>{
     console.log('My First Get Route');
