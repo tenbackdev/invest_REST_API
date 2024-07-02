@@ -79,6 +79,20 @@ export const getHistoricalIncome = async (histDays) => {
     }
 };
 
+export const getEstimatedIncome = async () => {
+    try {
+        let pool = await getConnection();
+        let prods = await pool.request()                  
+                            .query(`select * 
+                                    from invest.rpt.v_inc_time_srs as s
+                                    where 1=1
+                                    and s.inc_status in ('Announced', 'Estimated')`);
+        return prods.recordsets;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 /* ============================== Income - End ============================== */
 
 /* ============================ Tickers - Start ============================ */

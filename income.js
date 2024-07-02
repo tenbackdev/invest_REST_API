@@ -1,8 +1,9 @@
 import express from 'express';
 const router = express.Router();
-import {getHistoricalIncome} from './dbOperations.js';
+import {getEstimatedIncome, getHistoricalIncome} from './dbOperations.js';
 
-router.get('/:days?', async (req, res) => {
+
+router.get('/historical/:days?', async (req, res) => {
     try {
         const histDays = req.params.days || 10000;
         const result = await getHistoricalIncome(histDays);
@@ -30,21 +31,30 @@ router.get('/:days?', async (req, res) => {
 
 router.get('/next', async (req, res) => {
     try {
-        const result = await getAccounts();
-
+        const result = await getEstimatedIncome();    
+        //note for later, figure out how to move the timezone offset somewhere DRY
+        const rightNow = new Date(new Date().getTime() - (4 * 60 * 60 * 1000)); 
+        //console.log(rightNow);
+        const today = new Date(rightNow.getFullYear(), rightNow.getMonth(), rightNow.getDate(), -4, 0, 0);
+                
         if (result && result[0]) {
-            const accountsRes = result[0].map(row => ({
-                account_id : row.acct_id,
-                account_name: row.acct_nm,
-                account_number: row.acct_nbr.includes('-')
-                                    ? row.acct_nbr.slice(-4)
-                                    : row.acct_nbr,
-                institution_name: row.inst_nm
-            }))
-            res.json(accountsRes);
+            const initRes = result[0]
+            const futRes = initRes 
+                                .filter(item => new Date(item.pay_dt) >= today)
+                                .map(item => item.pay_dt)
+            const minFutDate = futRes.reduce((min, date) => (date < min ? date : min), futRes[0]);
+            
+            //console.log(minFutDate)
+
+            const nextRes = initRes
+                                    .filter(item => item.pay_dt === minFutDate)
+                                    //.map(item => item);
+            res.json(nextRes);
         } else {
             throw new Error('Not a result structure');
         }
+        console.log(today); 
+        //res.json('Testing')
     } catch (err) {
         console.error('Error querying the database:', err);
         res.status(500).send('Internal Server Error');

@@ -5,11 +5,15 @@ import accountRoute from './account.js'
 import balanceRoute from './balance.js'
 import incomeRoute from './income.js'
 import transactionRoute from './transaction.js'
+import cors from 'cors';
 
 const app = express();
 const PORT = 5000
 
 app.use(bodyParser.json());
+app.use(cors({
+    Origin: 'http://127.0.0.1'
+}));
 
 app.use('/ticker', tickerRoute);
 app.use('/account', accountRoute);

@@ -11,7 +11,7 @@ router.get('/current', async (req, res) => {
                 snapshot_date : row.snsh_dt,
                 institution_name: row.inst_nm,
                 account_name: row.acct_nm,
-                account_balances: row.acct_bal
+                account_balance: row.acct_bal
             }))
             res.json(accountsRes);
         } else {
