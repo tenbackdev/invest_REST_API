@@ -29,32 +29,34 @@ router.get('/historical/:days?', async (req, res) => {
     }
 })
 
+function isSameDay(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+
+    return (
+        d1.getUTCFullYear() === d2.getUTCFullYear() &&
+        d1.getUTCMonth() === d2.getUTCMonth() &&
+        d1.getUTCDate() === d2.getUTCDate()
+    ); 
+}
+
 router.get('/next', async (req, res) => {
     try {
         const result = await getEstimatedIncome();    
         //note for later, figure out how to move the timezone offset somewhere DRY
-        const rightNow = new Date(new Date().getTime() - (4 * 60 * 60 * 1000)); 
-        //console.log(rightNow);
-        const today = new Date(rightNow.getFullYear(), rightNow.getMonth(), rightNow.getDate(), -4, 0, 0);
-                
+        const rightNow = new Date();     
         if (result && result[0]) {
             const initRes = result[0]
             const futRes = initRes 
-                                .filter(item => new Date(item.pay_dt) >= today)
+                                .filter(item => (new Date(item.pay_dt) >= rightNow || isSameDay(item.pay_dt, rightNow) ))
                                 .map(item => item.pay_dt)
             const minFutDate = futRes.reduce((min, date) => (date < min ? date : min), futRes[0]);
-            
-            //console.log(minFutDate)
-
-            const nextRes = initRes
-                                    .filter(item => item.pay_dt === minFutDate)
-                                    //.map(item => item);
+            const nextRes = initRes.filter(item => isSameDay(item.pay_dt, minFutDate))
+                                    .map(item => item);
             res.json(nextRes);
         } else {
             throw new Error('Not a result structure');
         }
-        console.log(today); 
-        //res.json('Testing')
     } catch (err) {
         console.error('Error querying the database:', err);
         res.status(500).send('Internal Server Error');
