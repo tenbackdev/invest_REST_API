@@ -15,7 +15,7 @@ router.get('/estimated', async (req, res) => {
                 ticker : row.ticker,
                 ticker_name : row.ticker_nm,
                 income_announced : row.inc_status === 'Announced' ? true : false,
-                income_amount : row.income_amt,
+                income_dollars : row.trans_amt
             }))
 
             res.json(estIncRes);
